@@ -60,7 +60,7 @@ const Header = () => {
 
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-3">
-                    <img src="/images/logo.png" alt="Anandmayi Bhakti Logo" className="h-20 w-auto" />
+                    <img src="/images/logo.webp" alt="Anandmayi Bhakti Logo" className="h-20 w-auto" />
                     <span className="text-3xl font-bold text-maroon font-serif tracking-wide hidden sm:block">Anandmayi</span>
                 </Link>
 

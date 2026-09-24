@@ -27,7 +27,7 @@ const AdminLayout = () => {
             {/* Sidebar */}
             <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-charcoal text-white flex flex-col transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-4 bg-maroon text-center flex justify-between items-center md:justify-center">
-                    <img src="/images/logo.png" alt="Anandmayi Admin" className="h-12 w-auto" />
+                    <img src="/images/logo.webp" alt="Anandmayi Admin" className="h-12 w-auto" />
                     <button className="md:hidden text-white" onClick={() => setIsMobileMenuOpen(false)}>
                         <X size={24} />
                     </button>
