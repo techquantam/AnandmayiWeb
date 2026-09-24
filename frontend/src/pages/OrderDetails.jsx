@@ -184,9 +184,9 @@ const OrderDetails = () => {
                                                 <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-400">Image</div>
                                             )}
                                         </div>
-                                        <div className="flex-1 font-medium text-gray-800">
+                                        <Link to={`/product/${item.product}`} className="flex-1 font-medium text-gray-800 hover:text-saffron transition-colors">
                                             {item.name}
-                                        </div>
+                                        </Link>
                                         <div className="text-gray-600 text-sm">
                                             {item.qty} x ₹{item.price} = <span className="font-bold text-maroon">₹{(item.qty * item.price).toFixed(2)}</span>
                                         </div>

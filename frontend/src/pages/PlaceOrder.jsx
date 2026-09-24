@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { clearCartItems } from '../features/cartSlice';
 import CheckoutSteps from '../components/CheckoutSteps';
 import api from '../services/api';
 
@@ -35,6 +36,8 @@ const PlaceOrder = () => {
                 taxPrice: cart.taxPrice,
                 totalPrice: cart.totalPrice,
             });
+
+            dispatch(clearCartItems());
 
             if (cart.paymentMethod === 'Razorpay') {
                 navigate(`/order/${data._id}`);
