@@ -89,9 +89,9 @@ const Header = () => {
                             Login
                         </Link>
                     )}
-                    <Link to={userInfo ? (userInfo.role === 'admin' ? '/admin/dashboard' : '/profile') : '/login'} className="text-charcoal hover:text-saffron hidden sm:flex flex-col items-center">
+                    <Link to={userInfo ? (userInfo.role === 'admin' ? '/admin/dashboard' : '/profile') : '/login'} className="text-charcoal hover:text-saffron flex flex-col items-center">
                         <User size={22} strokeWidth={2.5} />
-                        <span className="text-[13px] mt-1 font-bold">{userInfo ? 'Profile' : 'Guest'}</span>
+                        <span className="text-[13px] mt-1 font-bold hidden sm:block">{userInfo ? 'Profile' : 'Guest'}</span>
                     </Link>
                     <Link to="/wishlist" className="text-charcoal hover:text-saffron flex flex-col items-center">
                         <Heart size={22} strokeWidth={2.5} />
@@ -154,9 +154,12 @@ const Header = () => {
                                     </Link>
                                 </li>
                             ))}
-                            <li className="pt-2 mt-2 border-t border-gray-100">
+                            <li className="pt-2 mt-2 border-t border-gray-100 flex flex-col gap-3">
                                 {userInfo ? (
-                                    <button onClick={() => { logoutHandler(); setIsMobileMenuOpen(false); }} className="block w-full text-left text-red-600 hover:text-red-700">Logout</button>
+                                    <>
+                                        <Link to={userInfo.role === 'admin' ? '/admin/dashboard' : '/profile'} onClick={() => setIsMobileMenuOpen(false)} className="block hover:text-saffron">My Profile</Link>
+                                        <button onClick={() => { logoutHandler(); setIsMobileMenuOpen(false); }} className="block w-full text-left text-red-600 hover:text-red-700">Logout</button>
+                                    </>
                                 ) : (
                                     <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block hover:text-saffron">Login / Register</Link>
                                 )}
