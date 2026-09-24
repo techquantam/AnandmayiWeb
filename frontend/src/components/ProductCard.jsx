@@ -1,6 +1,18 @@
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../features/cartSlice';
 
 const ProductCard = ({ product }) => {
+    const dispatch = useDispatch();
+    const cartItems = useSelector((state) => state.cart.cartItems);
+
+    const addToCartHandler = (e) => {
+        e.preventDefault(); // Prevent Link click if it's inside a Link or bubbling
+        const existItem = cartItems.find((x) => x._id === product._id);
+        const qty = existItem ? existItem.qty + 1 : 1;
+        dispatch(addToCart({ ...product, qty }));
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow group h-full flex flex-col">
             <Link to={`/product/${product.slug}`} className="block relative overflow-hidden aspect-square bg-gray-50">
@@ -28,7 +40,10 @@ const ProductCard = ({ product }) => {
                             <span className="text-gray-400 text-xs line-through">₹{product.mrp}</span>
                         )}
                     </div>
-                    <button className="bg-white border border-saffron text-saffron hover:bg-saffron hover:text-white px-3 py-1 md:px-4 md:py-1.5 rounded font-medium text-xs md:text-sm transition-colors whitespace-nowrap">
+                    <button 
+                        onClick={addToCartHandler}
+                        className="bg-white border border-saffron text-saffron hover:bg-saffron hover:text-white px-3 py-1 md:px-4 md:py-1.5 rounded font-medium text-xs md:text-sm transition-colors whitespace-nowrap"
+                    >
                         Add
                     </button>
                 </div>
