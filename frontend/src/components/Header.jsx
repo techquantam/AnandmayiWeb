@@ -50,7 +50,7 @@ const Header = () => {
             </div>
             
             {/* Main Header */}
-            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="container mx-auto px-4 py-1 flex items-center justify-between">
                 {/* Mobile Menu Icon */}
                 <div className="md:hidden flex items-center">
                     <button className="text-maroon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>

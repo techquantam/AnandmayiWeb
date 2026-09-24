@@ -112,7 +112,7 @@ const Home = () => {
 
             {/* Categories Section */}
             {categories.length > 0 && (
-                <section className="container mx-auto px-4 py-12">
+                <section className="container mx-auto px-4 py-6">
                     <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">Shop By Category</h2>
                     <div className="flex flex-wrap justify-center gap-6 md:gap-12">
                         {categories.map((category) => (
