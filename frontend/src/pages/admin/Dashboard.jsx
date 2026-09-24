@@ -5,25 +5,30 @@ import api from '../../services/api';
 const AdminDashboard = () => {
     // Placeholder data for now
     const [stats, setStats] = useState({
-        totalRevenue: 45000,
-        totalOrders: 124,
-        totalCustomers: 89,
-        activeProducts: 45
+        totalRevenue: 0,
+        totalOrders: 0,
+        totalCustomers: 0,
+        activeProducts: 0
     });
+    const [loading, setLoading] = useState(true);
 
     const [recentOrders, setRecentOrders] = useState([]);
 
     useEffect(() => {
         const fetchRecentOrders = async () => {
             try {
-                // Dummy data
-                setRecentOrders([
-                    { _id: '1', user: { name: 'Rahul Kumar' }, totalPrice: 1200, isPaid: true, createdAt: '2023-10-25' },
-                    { _id: '2', user: { name: 'Priya Sharma' }, totalPrice: 850, isPaid: false, createdAt: '2023-10-24' },
-                    { _id: '3', user: { name: 'Amit Singh' }, totalPrice: 3200, isPaid: true, createdAt: '2023-10-23' },
-                ]);
+                const { data } = await api.get('/api/orders/stats');
+                setStats({
+                    totalRevenue: data.totalRevenue,
+                    totalOrders: data.totalOrders,
+                    totalCustomers: data.totalCustomers,
+                    activeProducts: data.activeProducts
+                });
+                setRecentOrders(data.recentOrders);
+                setLoading(false);
             } catch (error) {
-                console.error("Failed to fetch recent orders");
+                console.error("Failed to fetch dashboard stats", error);
+                setLoading(false);
             }
         };
 
@@ -98,14 +103,14 @@ const AdminDashboard = () => {
                             {recentOrders.map((order) => (
                                 <tr key={order._id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium">#{order._id}</td>
-                                    <td className="px-6 py-4">{order.user.name}</td>
-                                    <td className="px-6 py-4">{order.createdAt}</td>
+                                    <td className="px-6 py-4">{order.user ? order.user.name : 'Unknown User'}</td>
+                                    <td className="px-6 py-4">{new Date(order.createdAt).toLocaleDateString()}</td>
                                     <td className="px-6 py-4">₹{order.totalPrice}</td>
                                     <td className="px-6 py-4">
                                         {order.isPaid ? (
                                             <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">Paid</span>
                                         ) : (
-                                            <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium">Pending</span>
+                                            <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-medium">Pending</span>
                                         )}
                                     </td>
                                 </tr>

@@ -163,6 +163,38 @@ const getOrders = asyncHandler(async (req, res) => {
     res.json(orders);
 });
 
+// @desc    Get dashboard stats
+// @route   GET /api/orders/stats
+// @access  Private/Admin
+const getDashboardStats = asyncHandler(async (req, res) => {
+    const Product = require('../models/Product');
+    const User = require('../models/User');
+
+    const ordersCount = await Order.countDocuments();
+    const productsCount = await Product.countDocuments();
+    const customersCount = await User.countDocuments({ role: 'customer' });
+    
+    const result = await Order.aggregate([
+        { $match: { isPaid: true } },
+        { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }
+    ]);
+
+    const totalRevenue = result.length > 0 ? result[0].totalRevenue : 0;
+
+    const recentOrders = await Order.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate('user', 'name email');
+
+    res.json({
+        totalOrders: ordersCount,
+        activeProducts: productsCount,
+        totalCustomers: customersCount,
+        totalRevenue: totalRevenue,
+        recentOrders: recentOrders
+    });
+});
+
 module.exports = {
     addOrderItems,
     getOrderById,
@@ -171,4 +203,5 @@ module.exports = {
     updateOrderStatus,
     getMyOrders,
     getOrders,
+    getDashboardStats
 };
