@@ -9,6 +9,7 @@ const Header = () => {
     const navigate = useNavigate();
     const [keyword, setKeyword] = useState('');
     const [categories, setCategories] = useState([]);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.cartItems);
     const userInfo = useSelector((state) => state.auth.userInfo);
@@ -33,6 +34,7 @@ const Header = () => {
 
     const searchSubmitHandler = (e) => {
         e.preventDefault();
+        setIsMobileMenuOpen(false);
         if (keyword.trim()) {
             navigate(`/shop?keyword=${keyword}`);
         } else {
@@ -51,7 +53,7 @@ const Header = () => {
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                 {/* Mobile Menu Icon */}
                 <div className="md:hidden flex items-center">
-                    <button className="text-maroon">
+                    <button className="text-maroon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                         <Menu size={24} />
                     </button>
                 </div>
@@ -125,6 +127,44 @@ const Header = () => {
                     </ul>
                 </div>
             </nav>
+
+            {/* Mobile Navigation Dropdown */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden border-t border-gray-100 bg-white">
+                    <div className="px-4 py-4 space-y-4">
+                        <form onSubmit={searchSubmitHandler} className="flex relative">
+                            <input 
+                                type="text" 
+                                value={keyword}
+                                onChange={(e) => setKeyword(e.target.value)}
+                                placeholder="Search products..." 
+                                className="w-full border border-gray-300 rounded-full py-2 px-4 focus:outline-none focus:border-saffron focus:ring-1 focus:ring-saffron text-sm"
+                            />
+                            <button type="submit" className="absolute right-3 top-2.5 text-gray-400 hover:text-saffron">
+                                <Search size={18} />
+                            </button>
+                        </form>
+                        <ul className="flex flex-col gap-3 font-bold text-maroon">
+                            <li><Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="block hover:text-saffron">Home</Link></li>
+                            <li><Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block hover:text-saffron">Shop All</Link></li>
+                            {categories.slice(0, 4).map(category => (
+                                <li key={category._id}>
+                                    <Link to={`/shop?category=${category._id}`} onClick={() => setIsMobileMenuOpen(false)} className="block hover:text-saffron">
+                                        {category.name}
+                                    </Link>
+                                </li>
+                            ))}
+                            <li className="pt-2 mt-2 border-t border-gray-100">
+                                {userInfo ? (
+                                    <button onClick={() => { logoutHandler(); setIsMobileMenuOpen(false); }} className="block w-full text-left text-red-600 hover:text-red-700">Logout</button>
+                                ) : (
+                                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block hover:text-saffron">Login / Register</Link>
+                                )}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            )}
         </header>
     );
 };
