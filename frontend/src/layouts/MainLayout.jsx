@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from '../components/Header';
-import { MessageCircle, MapPin, Phone, Mail } from 'lucide-react';
+import { MessageCircle, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const MainLayout = () => {
@@ -53,17 +53,9 @@ const MainLayout = () => {
                         <div>
                             <h3 className="text-xl font-bold mb-6 text-saffron">Get In Touch</h3>
                             <ul className="space-y-4">
-                                <li className="flex gap-3 text-gray-300">
-                                    <Mail className="flex-shrink-0 text-saffron" size={20} />
-                                    <a href="mailto:info@pujasamagrionline.in" className="hover:text-white transition-colors">info@pujasamagrionline.in</a>
-                                </li>
-                                <li className="flex gap-3 text-gray-300">
+                                <li className="flex items-center gap-3 text-gray-300">
                                     <Phone className="flex-shrink-0 text-saffron" size={20} />
-                                    <a href="tel:+919870365855" className="hover:text-white transition-colors">+91 9870365855</a>
-                                </li>
-                                <li className="flex gap-3 text-gray-300">
-                                    <MapPin className="flex-shrink-0 text-saffron mt-1" size={20} />
-                                    <span>8-A/13 sector 15, Rohini, Delhi, 110089</span>
+                                    <a href="tel:+917570973464" className="hover:text-white transition-colors text-base font-medium">+91 7570973464</a>
                                 </li>
                             </ul>
                         </div>

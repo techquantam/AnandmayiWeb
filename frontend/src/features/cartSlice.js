@@ -12,11 +12,18 @@ const updateCart = (state) => {
     // Calculate items price
     state.itemsPrice = addDecimals(state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0));
 
-    // Calculate shipping price (Free shipping for orders over 500)
-    state.shippingPrice = addDecimals(state.itemsPrice > 500 ? 0 : 50);
+    // Calculate shipping price based on product-level shipping charges set by admin
+    state.shippingPrice = addDecimals(
+        state.cartItems.reduce((acc, item) => acc + (Number(item.shippingCharge) || 0), 0)
+    );
 
-    // Calculate tax price (18% tax)
-    state.taxPrice = addDecimals(Number((0.18 * state.itemsPrice).toFixed(2)));
+    // Calculate tax price based on product-level GST percent set by admin
+    state.taxPrice = addDecimals(
+        state.cartItems.reduce((acc, item) => {
+            const gst = Number(item.gstPercent) || 0;
+            return acc + (item.price * item.qty * gst) / 100;
+        }, 0)
+    );
 
     // Calculate total price
     state.totalPrice = (

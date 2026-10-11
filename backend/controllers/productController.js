@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-    const pageSize = 12;
+    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 12;
     const page = Number(req.query.pageNumber) || 1;
 
     const keyword = req.query.keyword
@@ -54,21 +54,50 @@ const getProductBySlug = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
+    const {
+        name,
+        price,
+        mrp,
+        description,
+        shortDescription,
+        images,
+        brand,
+        category,
+        stock,
+        isFeatured,
+        isFlashSale,
+        isBestSeller,
+        isNewArrival,
+        gstPercent,
+        shippingCharge
+    } = req.body;
+
+    const baseSlug = name ? name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : 'product';
+    const slug = req.body.slug || `${baseSlug}-${Date.now()}`;
+    const sku = req.body.sku || `SKU-${Date.now()}`;
+
     const product = new Product({
-        name: 'Sample name',
-        slug: 'sample-name-' + Date.now(),
-        sku: 'SKU-' + Date.now(),
-        price: 0,
-        mrp: 0,
+        name: name || 'Sample name',
+        slug,
+        sku,
+        price: price !== undefined ? Number(price) : 0,
+        mrp: mrp !== undefined ? Number(mrp) : 0,
         user: req.user._id,
-        images: [
+        images: images && images.length > 0 ? images : [
             { public_id: 'sample_id', url: '/images/sample.jpg' }
         ],
-        brand: 'Sample brand',
-        category: req.body.category || '60c72b2f9b1e8a0015b6d1f9', // Needs valid object ID here normally
-        stock: 0,
+        brand: brand || 'Anandmayi',
+        category: category || '60c72b2f9b1e8a0015b6d1f9',
+        stock: stock !== undefined ? Number(stock) : 0,
+        gstPercent: gstPercent !== undefined ? Number(gstPercent) : 0,
+        shippingCharge: shippingCharge !== undefined ? Number(shippingCharge) : 0,
         numReviews: 0,
-        description: 'Sample description',
+        description: description || 'Sample description',
+        shortDescription: shortDescription || '',
+        isFeatured: Boolean(isFeatured),
+        isFlashSale: Boolean(isFlashSale),
+        isBestSeller: Boolean(isBestSeller),
+        isNewArrival: Boolean(isNewArrival),
     });
 
     const createdProduct = await product.save();
@@ -94,7 +123,9 @@ const updateProduct = asyncHandler(async (req, res) => {
         isFeatured,
         isFlashSale,
         isBestSeller,
-        isNewArrival
+        isNewArrival,
+        gstPercent,
+        shippingCharge
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -103,18 +134,20 @@ const updateProduct = asyncHandler(async (req, res) => {
         product.name = name || product.name;
         product.slug = slug || product.slug;
         product.sku = sku || product.sku;
-        product.price = price || product.price;
-        product.mrp = mrp || product.mrp;
+        product.price = price !== undefined ? Number(price) : product.price;
+        product.mrp = mrp !== undefined ? Number(mrp) : product.mrp;
         product.description = description || product.description;
-        product.shortDescription = shortDescription || product.shortDescription;
+        product.shortDescription = shortDescription !== undefined ? shortDescription : product.shortDescription;
         product.images = images || product.images;
         product.brand = brand || product.brand;
         product.category = category || product.category;
-        product.stock = stock || product.stock;
+        product.stock = stock !== undefined ? Number(stock) : product.stock;
         product.isFeatured = isFeatured !== undefined ? isFeatured : product.isFeatured;
         product.isFlashSale = isFlashSale !== undefined ? isFlashSale : product.isFlashSale;
         product.isBestSeller = isBestSeller !== undefined ? isBestSeller : product.isBestSeller;
         product.isNewArrival = isNewArrival !== undefined ? isNewArrival : product.isNewArrival;
+        product.gstPercent = gstPercent !== undefined ? Number(gstPercent) : (product.gstPercent || 0);
+        product.shippingCharge = shippingCharge !== undefined ? Number(shippingCharge) : (product.shippingCharge || 0);
 
         const updatedProduct = await product.save();
         res.json(updatedProduct);

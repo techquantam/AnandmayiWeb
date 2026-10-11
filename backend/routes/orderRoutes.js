@@ -8,7 +8,8 @@ const {
     updateOrderStatus,
     getMyOrders,
     getOrders,
-    getDashboardStats
+    getDashboardStats,
+    deleteOrder
 } = require('../controllers/orderController');
 const { protect, admin } = require('../middleware/auth');
 
@@ -17,7 +18,9 @@ router.route('/')
     .get(protect, admin, getOrders);
 router.route('/myorders').get(protect, getMyOrders);
 router.route('/stats').get(protect, admin, getDashboardStats);
-router.route('/:id').get(protect, getOrderById);
+router.route('/:id')
+    .get(protect, getOrderById)
+    .delete(protect, admin, deleteOrder);
 router.route('/:id/pay').post(protect, createRazorpayOrder);
 router.route('/:id/verify').post(protect, verifyRazorpayPayment);
 router.route('/:id/status').put(protect, admin, updateOrderStatus);

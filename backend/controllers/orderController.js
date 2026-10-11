@@ -195,6 +195,21 @@ const getDashboardStats = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Delete an order
+// @route   DELETE /api/orders/:id
+// @access  Private/Admin
+const deleteOrder = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        await order.deleteOne();
+        res.json({ message: 'Order removed' });
+    } else {
+        res.status(404);
+        throw new Error('Order not found');
+    }
+});
+
 module.exports = {
     addOrderItems,
     getOrderById,
@@ -203,5 +218,6 @@ module.exports = {
     updateOrderStatus,
     getMyOrders,
     getOrders,
-    getDashboardStats
+    getDashboardStats,
+    deleteOrder
 };

@@ -54,7 +54,23 @@ const Cart = () => {
                                         <Link to={`/product/${item.slug}`} className="font-medium text-charcoal hover:text-saffron text-lg">
                                             {item.name}
                                         </Link>
-                                        <div className="text-maroon font-bold mt-1">₹{item.price}</div>
+                                        <div className="text-maroon font-bold mt-1 flex items-center gap-2 flex-wrap">
+                                            <span>₹{item.price}</span>
+                                            {item.gstPercent !== undefined && (
+                                                <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded font-normal">
+                                                    GST: {item.gstPercent}%
+                                                </span>
+                                            )}
+                                            {Number(item.shippingCharge) > 0 ? (
+                                                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded font-normal">
+                                                    Shipping: ₹{item.shippingCharge}
+                                                </span>
+                                            ) : (
+                                                <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-normal">
+                                                    Free Shipping
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <select 
@@ -92,10 +108,10 @@ const Cart = () => {
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Shipping</span>
-                                    <span>{shippingPrice > 0 ? `₹${shippingPrice}` : <span className="text-green-600">Free</span>}</span>
+                                    <span>{Number(shippingPrice) > 0 ? `₹${shippingPrice}` : <span className="text-green-600 font-semibold">Free</span>}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Tax (18%)</span>
+                                    <span>GST / Tax</span>
                                     <span>₹{taxPrice}</span>
                                 </div>
                             </div>
@@ -114,12 +130,6 @@ const Cart = () => {
                             >
                                 Proceed to Checkout
                             </button>
-
-                            {itemsPrice < 500 && (
-                                <p className="text-sm text-center text-gray-500 mt-4">
-                                    Add ₹{(500 - itemsPrice).toFixed(2)} more for free shipping!
-                                </p>
-                            )}
                         </div>
                     </div>
                 </div>

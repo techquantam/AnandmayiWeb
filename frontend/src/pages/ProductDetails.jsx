@@ -89,16 +89,38 @@ const ProductDetails = () => {
                             <span className="text-sm text-gray-500">({product.numReviews} Reviews)</span>
                         </div>
 
-                        <div className="flex items-end gap-4 mb-6">
-                            <span className="text-3xl font-bold text-maroon">₹{product.price}</span>
-                            {product.mrp > product.price && (
-                                <>
-                                    <span className="text-lg text-gray-400 line-through mb-1">₹{product.mrp}</span>
-                                    <span className="text-sm font-bold text-green-600 mb-1">
-                                        {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+                        <div className="mb-4">
+                            <div className="flex items-baseline gap-3 flex-wrap">
+                                {product.mrp > product.price && (
+                                    <span className="text-3xl md:text-4xl font-light text-[#CC0C39] tracking-tight">
+                                        -{Math.round(((product.mrp - product.price) / product.mrp) * 100)}%
                                     </span>
-                                </>
+                                )}
+                                <div className="flex items-start text-gray-900">
+                                    <span className="text-base font-normal mt-1 mr-0.5">₹</span>
+                                    <span className="text-3xl md:text-4xl font-semibold tracking-tight">
+                                        {Number(product.price).toLocaleString('en-IN')}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {product.mrp > product.price && (
+                                <div className="text-sm text-[#565959] mt-1 flex items-center gap-1 font-normal">
+                                    <span>M.R.P.:</span>
+                                    <span className="line-through">₹{Number(product.mrp).toLocaleString('en-IN')}</span>
+                                </div>
                             )}
+                        </div>
+
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-6 flex-wrap">
+                            <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded font-medium">
+                                {product.gstPercent ? `${product.gstPercent}% GST` : '0% GST (Exempt)'}
+                            </span>
+                            <span className="text-gray-300">•</span>
+                            <span className="flex items-center gap-1 font-medium text-gray-700">
+                                <Truck size={14} className="text-saffron" />
+                                {Number(product.shippingCharge) > 0 ? `Delivery: ₹${product.shippingCharge}` : <span className="text-emerald-700">Free Delivery</span>}
+                            </span>
                         </div>
 
                         <p className="text-gray-600 mb-8 leading-relaxed">
@@ -163,7 +185,7 @@ const ProductDetails = () => {
                             </div>
                             <div className="flex items-center gap-3">
                                 <Truck className="text-saffron" size={20} />
-                                <span>Fast Delivery</span>
+                                <span>{Number(product.shippingCharge) > 0 ? `Delivery: ₹${product.shippingCharge}` : 'Free Delivery'}</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <RotateCcw className="text-saffron" size={20} />

@@ -24,6 +24,8 @@ const PlaceOrder = () => {
                 qty: item.qty,
                 image: item.images && item.images.length > 0 ? item.images[0].url : 'https://via.placeholder.com/50',
                 price: item.price,
+                gstPercent: item.gstPercent !== undefined ? Number(item.gstPercent) : 0,
+                shippingCharge: item.shippingCharge !== undefined ? Number(item.shippingCharge) : 0,
                 product: item._id || item.product,
             }));
 
@@ -121,10 +123,10 @@ const PlaceOrder = () => {
                             </div>
                             <div className="flex justify-between">
                                 <span>Shipping</span>
-                                <span>₹{cart.shippingPrice}</span>
+                                <span>{Number(cart.shippingPrice) > 0 ? `₹${cart.shippingPrice}` : <span className="text-green-600 font-semibold">Free</span>}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Tax</span>
+                                <span>GST / Tax</span>
                                 <span>₹{cart.taxPrice}</span>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Save, ArrowLeft, Upload } from 'lucide-react';
+import { Save, ArrowLeft, Upload, Percent, Truck, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -18,6 +18,8 @@ const ProductEdit = () => {
     const [category, setCategory] = useState('');
     const [categories, setCategories] = useState([]);
     const [stock, setStock] = useState(0);
+    const [gstPercent, setGstPercent] = useState(0);
+    const [shippingCharge, setShippingCharge] = useState(0);
     const [description, setDescription] = useState('');
     
     // Feature flags
@@ -54,6 +56,8 @@ const ProductEdit = () => {
                     setBrand(data.brand);
                     setCategory(data.category?._id || data.category);
                     setStock(data.stock);
+                    setGstPercent(data.gstPercent !== undefined ? data.gstPercent : 0);
+                    setShippingCharge(data.shippingCharge !== undefined ? data.shippingCharge : 0);
                     setDescription(data.description);
                     setIsFeatured(data.isFeatured || false);
                     setIsFlashSale(data.isFlashSale || false);
@@ -81,7 +85,9 @@ const ProductEdit = () => {
             images: [{ url: image }],
             brand,
             category,
-            stock,
+            stock: Number(stock),
+            gstPercent: Number(gstPercent),
+            shippingCharge: Number(shippingCharge),
             description,
             isFeatured,
             isFlashSale,
@@ -103,6 +109,22 @@ const ProductEdit = () => {
             const errorMsg = error.response?.data?.message || error.response?.data || 'Failed to save product';
             toast.error(`Save failed: ${errorMsg}`);
             setLoading(false);
+        }
+    };
+
+    const deleteProductHandler = async () => {
+        if (window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+            setLoading(true);
+            try {
+                await api.delete(`/api/products/${id}`);
+                toast.success('Product deleted successfully');
+                navigate('/admin/products');
+            } catch (error) {
+                console.error('Delete Error:', error);
+                const errorMsg = error.response?.data?.message || 'Failed to delete product';
+                toast.error(`Delete failed: ${errorMsg}`);
+                setLoading(false);
+            }
         }
     };
 
@@ -217,6 +239,124 @@ const ProductEdit = () => {
                         </div>
                     </div>
 
+                    <div className="bg-amber-50/50 p-5 rounded-lg border border-amber-200/70 space-y-4">
+                        <div className="flex items-center justify-between border-b border-amber-200/60 pb-2">
+                            <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                                <Percent size={18} className="text-saffron" />
+                                GST & Shipping Settings (Admin)
+                            </h3>
+                            <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">
+                                Per Product
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-1">
+                            {/* GST Rate */}
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    GST Rate (%)
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="relative flex-1">
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            step="0.1"
+                                            value={gstPercent}
+                                            onChange={(e) => setGstPercent(e.target.value === '' ? '' : Number(e.target.value))}
+                                            className="w-full border border-gray-300 rounded px-4 py-2 pr-8 focus:outline-none focus:border-saffron bg-white"
+                                            placeholder="0"
+                                        />
+                                        <span className="absolute right-3 top-2.5 text-gray-400 font-medium text-sm">%</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                    <span className="text-xs text-gray-500 mr-1 self-center">Quick Set:</span>
+                                    {[0, 5, 12, 18, 28].map((rate) => (
+                                        <button
+                                            key={rate}
+                                            type="button"
+                                            onClick={() => setGstPercent(rate)}
+                                            className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                                                Number(gstPercent) === rate
+                                                    ? 'bg-saffron text-white border-saffron font-medium'
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                                            }`}
+                                        >
+                                            {rate === 0 ? '0% (Exempt)' : `${rate}%`}
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                    Pooja samagri/hawan items may be 0% or 5%, manufactured goods 12% or 18%.
+                                </p>
+                            </div>
+
+                            {/* Shipping Charge */}
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                                    <Truck size={16} className="text-saffron" />
+                                    Shipping Charge (₹)
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="relative flex-1">
+                                        <span className="absolute left-3 top-2.5 text-gray-400 font-medium text-sm">₹</span>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="1"
+                                            value={shippingCharge}
+                                            onChange={(e) => setShippingCharge(e.target.value === '' ? '' : Number(e.target.value))}
+                                            className="w-full border border-gray-300 rounded pl-8 pr-4 py-2 focus:outline-none focus:border-saffron bg-white"
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                    <span className="text-xs text-gray-500 mr-1 self-center">Quick Set:</span>
+                                    {[0, 40, 50, 70, 100].map((amt) => (
+                                        <button
+                                            key={amt}
+                                            type="button"
+                                            onClick={() => setShippingCharge(amt)}
+                                            className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                                                Number(shippingCharge) === amt
+                                                    ? 'bg-saffron text-white border-saffron font-medium'
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                                            }`}
+                                        >
+                                            {amt === 0 ? 'Free Shipping (₹0)' : `₹${amt}`}
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                    Set 0 for Free Shipping, or custom amount for heavy/special delivery.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Live calculation banner */}
+                        <div className="bg-white/80 rounded p-2.5 border border-amber-200/80 text-xs text-gray-700 flex flex-wrap justify-between items-center gap-2">
+                            <span>
+                                💡 <strong>Price:</strong> ₹{price || 0}
+                            </span>
+                            <span>
+                                <strong>GST ({gstPercent || 0}%):</strong> ₹{(((Number(price) || 0) * (Number(gstPercent) || 0)) / 100).toFixed(2)}
+                            </span>
+                            <span>
+                                <strong>Shipping:</strong> {Number(shippingCharge) > 0 ? `₹${shippingCharge}` : <span className="text-green-700 font-semibold">Free</span>}
+                            </span>
+                            <span className="font-semibold text-maroon">
+                                Estimated Total / Unit: ₹{(
+                                    (Number(price) || 0) +
+                                    (((Number(price) || 0) * (Number(gstPercent) || 0)) / 100) +
+                                    (Number(shippingCharge) || 0)
+                                ).toFixed(2)}
+                            </span>
+                        </div>
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
                         {image && (
@@ -273,7 +413,19 @@ const ProductEdit = () => {
                         ></textarea>
                     </div>
 
-                    <div className="flex justify-end pt-4 border-t border-gray-100">
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                        {isEditMode ? (
+                            <button 
+                                type="button" 
+                                onClick={deleteProductHandler}
+                                disabled={loading}
+                                className="bg-red-50 text-red-600 border border-red-200 px-5 py-2.5 rounded font-medium flex items-center gap-2 hover:bg-red-100 transition-colors disabled:opacity-70"
+                            >
+                                <Trash2 size={18} />
+                                Delete Product
+                            </button>
+                        ) : <div />}
+
                         <button 
                             type="submit" 
                             disabled={loading}

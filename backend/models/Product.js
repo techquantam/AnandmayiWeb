@@ -26,6 +26,8 @@ const productSchema = new mongoose.Schema({
     mrp: { type: Number, required: true, default: 0 },
     discount: { type: Number, default: 0 },
     stock: { type: Number, required: true, default: 0 },
+    gstPercent: { type: Number, default: 0, min: 0, max: 100 },
+    shippingCharge: { type: Number, default: 0, min: 0 },
     images: [
         {
             public_id: { type: String },
