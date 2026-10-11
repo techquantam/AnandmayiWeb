@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -131,6 +131,11 @@ const OrderDetails = () => {
                                         <CheckCircle size={20} />
                                         Paid on {new Date(order.paidAt).toLocaleDateString()}
                                     </div>
+                                ) : order.paymentMethod === 'COD' ? (
+                                    <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded font-medium">
+                                        <Clock size={20} />
+                                        Cash on Delivery (Payment on arrival)
+                                    </div>
                                 ) : (
                                     <div className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded font-medium">
                                         <AlertCircle size={20} />
@@ -241,8 +246,8 @@ const OrderDetails = () => {
                             )}
 
                             {!order.isPaid && order.paymentMethod === 'COD' && (
-                                <div className="text-center text-sm font-medium text-gray-600 bg-gray-50 p-3 rounded">
-                                    Payment to be collected on delivery.
+                                <div className="text-center text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200 p-3 rounded">
+                                    💵 Cash on Delivery (COD) — Please keep ₹{order.totalPrice} ready upon delivery.
                                 </div>
                             )}
                         </div>

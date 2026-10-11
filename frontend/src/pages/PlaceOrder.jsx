@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearCartItems } from '../features/cartSlice';
+import { clearCartItems, savePaymentMethod } from '../features/cartSlice';
 import CheckoutSteps from '../components/CheckoutSteps';
 import api from '../services/api';
 
@@ -15,7 +15,10 @@ const PlaceOrder = () => {
         if (!cart.shippingAddress.address) {
             navigate('/shipping');
         }
-    }, [cart.shippingAddress.address, navigate]);
+        if (cart.paymentMethod !== 'COD') {
+            dispatch(savePaymentMethod('COD'));
+        }
+    }, [cart.shippingAddress.address, cart.paymentMethod, dispatch, navigate]);
 
     const placeOrderHandler = async () => {
         try {
@@ -32,7 +35,7 @@ const PlaceOrder = () => {
             const { data } = await api.post('/api/orders', {
                 orderItems: orderItemsFormatted,
                 shippingAddress: cart.shippingAddress,
-                paymentMethod: cart.paymentMethod,
+                paymentMethod: 'COD',
                 itemsPrice: cart.itemsPrice,
                 shippingPrice: cart.shippingPrice,
                 taxPrice: cart.taxPrice,
@@ -40,13 +43,7 @@ const PlaceOrder = () => {
             });
 
             dispatch(clearCartItems());
-
-            if (cart.paymentMethod === 'Razorpay') {
-                navigate(`/order/${data._id}`);
-            } else {
-                // Handle COD
-                navigate(`/order/${data._id}`);
-            }
+            navigate(`/order/${data._id}`);
         } catch (error) {
             console.error('Order creation failed:', error);
             alert('Failed to place order.');
@@ -77,14 +74,28 @@ const PlaceOrder = () => {
 
                     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
                         <h2 className="text-xl font-bold text-charcoal mb-4 pb-2 border-b">Payment Method</h2>
-                        <div className="flex gap-4">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="Razorpay" checked readOnly className="accent-saffron" />
-                                <span>Razorpay (Online)</span>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer font-medium text-gray-800">
+                                <input 
+                                    type="radio" 
+                                    name="paymentMethod" 
+                                    value="COD" 
+                                    checked={cart.paymentMethod === 'COD'} 
+                                    onChange={() => dispatch(savePaymentMethod('COD'))}
+                                    className="accent-saffron h-4 w-4 cursor-pointer" 
+                                />
+                                <span>Cash on Delivery</span>
                             </label>
-                            <label className="flex items-center gap-2 cursor-pointer text-gray-400">
-                                <input type="radio" name="paymentMethod" value="COD" disabled className="accent-saffron" />
-                                <span>Cash on Delivery (Not available)</span>
+                            <label className="flex items-center gap-2 cursor-not-allowed text-gray-400">
+                                <input 
+                                    type="radio" 
+                                    name="paymentMethod" 
+                                    value="Razorpay" 
+                                    disabled 
+                                    checked={false}
+                                    className="accent-saffron h-4 w-4 cursor-not-allowed" 
+                                />
+                                <span>Razorpay (Online) (Not available)</span>
                             </label>
                         </div>
                     </div>
