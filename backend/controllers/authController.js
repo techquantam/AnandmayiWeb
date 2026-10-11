@@ -126,10 +126,30 @@ const getUsers = asyncHandler(async (req, res) => {
     res.json(users);
 });
 
+// @desc    Delete user
+// @route   DELETE /api/auth/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        if (user.role === 'admin' && req.user._id.toString() === user._id.toString()) {
+            res.status(400);
+            throw new Error('You cannot delete your own admin account');
+        }
+        await user.deleteOne();
+        res.json({ message: 'User removed successfully' });
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
 module.exports = {
     registerUser,
     loginUser,
     getUserProfile,
     updateUserProfile,
     getUsers,
+    deleteUser
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Mail, Phone, Calendar, Search, X } from 'lucide-react';
+import { Mail, Phone, Calendar, Search, X, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import api from '../../services/api';
 
 const AdminCustomers = () => {
@@ -15,12 +16,27 @@ const AdminCustomers = () => {
                 setLoading(false);
             } catch (error) {
                 console.error("Failed to fetch customers", error);
+                toast.error("Failed to fetch customers");
                 setLoading(false);
             }
         };
 
         fetchCustomers();
     }, []);
+
+    const deleteHandler = async (id, customerName) => {
+        if (window.confirm(`Are you sure you want to delete customer "${customerName || 'this user'}"? This action cannot be undone.`)) {
+            try {
+                await api.delete(`/api/auth/users/${id}`);
+                setCustomers(customers.filter(c => c._id !== id));
+                toast.success('Customer deleted successfully');
+            } catch (error) {
+                console.error('Delete customer error:', error);
+                const errorMsg = error.response?.data?.message || 'Failed to delete customer';
+                toast.error(errorMsg);
+            }
+        }
+    };
 
     const filteredCustomers = customers.filter((customer) => {
         const query = searchTerm.toLowerCase().trim();
@@ -78,6 +94,7 @@ const AdminCustomers = () => {
                                     <th className="px-6 py-3 font-medium">Phone</th>
                                     <th className="px-6 py-3 font-medium">Role</th>
                                     <th className="px-6 py-3 font-medium">Registered</th>
+                                    <th className="px-6 py-3 font-medium text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="text-sm text-gray-700 divide-y divide-gray-100">
@@ -121,11 +138,20 @@ const AdminCustomers = () => {
                                                 {new Date(customer.createdAt).toLocaleDateString()}
                                             </div>
                                         </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button 
+                                                onClick={() => deleteHandler(customer._id, customer.name)}
+                                                className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                title="Delete Customer"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 {filteredCustomers.length === 0 && (
                                     <tr>
-                                        <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                                        <td colSpan="7" className="px-6 py-10 text-center text-gray-500">
                                             {searchTerm ? (
                                                 <div>
                                                     <p className="font-medium text-gray-700">No customers found</p>
