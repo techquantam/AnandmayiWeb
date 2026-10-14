@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from '../components/Header';
-import { MessageCircle, Phone } from 'lucide-react';
+import { MessageCircle, Phone, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const MainLayout = () => {
@@ -29,7 +29,7 @@ const MainLayout = () => {
                                 <a href="#" className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#e6683c] to-[#bc1888] flex items-center justify-center text-white hover:opacity-90 transition-opacity">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                                 </a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white hover:opacity-90 transition-opacity">
+                                <a href="https://wa.me/919555818830" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white hover:opacity-90 transition-opacity" aria-label="WhatsApp">
                                     <MessageCircle size={20} />
                                 </a>
                                 <a href="#" className="w-10 h-10 rounded-full bg-[#FF0000] flex items-center justify-center text-white hover:opacity-90 transition-opacity">
@@ -55,7 +55,11 @@ const MainLayout = () => {
                             <ul className="space-y-4">
                                 <li className="flex items-center gap-3 text-gray-300">
                                     <Phone className="flex-shrink-0 text-saffron" size={20} />
-                                    <a href="tel:+917570973464" className="hover:text-white transition-colors text-base font-medium">+91 7570973464</a>
+                                    <a href="tel:+919555818830" className="hover:text-white transition-colors text-base font-medium">+91 95558 18830</a>
+                                </li>
+                                <li className="flex items-center gap-3 text-gray-300">
+                                    <Mail className="flex-shrink-0 text-saffron" size={20} />
+                                    <a href="mailto:support@anandmayi.com" className="hover:text-white transition-colors text-base font-medium">support@anandmayi.com</a>
                                 </li>
                             </ul>
                         </div>
