@@ -112,20 +112,18 @@ const ProductDetails = () => {
                             )}
                         </div>
 
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-6 flex-wrap">
-                            <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded font-medium">
-                                {product.gstPercent ? `${product.gstPercent}% GST` : '0% GST (Exempt)'}
-                            </span>
-                            <span className="text-gray-300">•</span>
-                            <span className="flex items-center gap-1 font-medium text-gray-700">
+                        <div className="flex items-center gap-2 text-xs text-gray-600 mb-6">
+                            <span className="flex items-center gap-1.5 font-medium text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-md">
                                 <Truck size={14} className="text-saffron" />
-                                {Number(product.shippingCharge) > 0 ? `Delivery: ₹${product.shippingCharge}` : <span className="text-emerald-700">Free Delivery</span>}
+                                {Number(product.shippingCharge) > 0 ? `Delivery: ₹${product.shippingCharge}` : <span className="text-emerald-700 font-semibold">Free Delivery</span>}
                             </span>
                         </div>
 
-                        <p className="text-gray-600 mb-8 leading-relaxed">
-                            {product.shortDescription || product.description}
-                        </p>
+                        {product.shortDescription && (
+                            <p className="text-gray-600 mb-6 leading-relaxed text-sm">
+                                {product.shortDescription}
+                            </p>
+                        )}
 
                         <div className="mb-8 pb-8 border-b border-gray-100">
                             <div className="flex items-center gap-4 mb-4">
@@ -195,13 +193,17 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                {/* Description Tabs */}
-                <div className="mt-16">
-                    <h2 className="text-xl font-bold border-b pb-2 mb-4 text-charcoal">Product Description</h2>
-                    <div className="prose max-w-none text-gray-600">
-                        {product.description}
+                {/* Product Description */}
+                {product.description && (
+                    <div className="mt-12 pt-6 border-t border-gray-100">
+                        <h2 className="text-xl font-bold pb-3 mb-4 text-charcoal border-b border-gray-100">
+                            Product Description
+                        </h2>
+                        <div className="text-gray-600 leading-relaxed whitespace-pre-line text-sm md:text-base">
+                            {product.description}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

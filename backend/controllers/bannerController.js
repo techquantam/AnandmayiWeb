@@ -1,11 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const Banner = require('../models/Banner');
+const Product = require('../models/Product');
 
 // @desc    Get all active banners
 // @route   GET /api/banners
 // @access  Public
 const getBanners = asyncHandler(async (req, res) => {
-    const banners = await Banner.find({ isActive: true });
+    const banners = await Banner.find({ isActive: true }).populate('product', 'name slug price images mrp');
     res.json(banners);
 });
 
@@ -13,7 +14,7 @@ const getBanners = asyncHandler(async (req, res) => {
 // @route   GET /api/banners/admin
 // @access  Private/Admin
 const getAdminBanners = asyncHandler(async (req, res) => {
-    const banners = await Banner.find({});
+    const banners = await Banner.find({}).populate('product', 'name slug price images mrp');
     res.json(banners);
 });
 
@@ -21,37 +22,41 @@ const getAdminBanners = asyncHandler(async (req, res) => {
 // @route   POST /api/banners
 // @access  Private/Admin
 const createBanner = asyncHandler(async (req, res) => {
-    const { title, subtitle, link, image, isActive } = req.body;
+    const { title, subtitle, link, product, image, isActive } = req.body;
 
     const banner = new Banner({
         title,
         subtitle,
         link,
+        product: product || null,
         image,
         isActive
     });
 
     const createdBanner = await banner.save();
-    res.status(201).json(createdBanner);
+    const populatedBanner = await Banner.findById(createdBanner._id).populate('product', 'name slug price images mrp');
+    res.status(201).json(populatedBanner);
 });
 
 // @desc    Update a banner
 // @route   PUT /api/banners/:id
 // @access  Private/Admin
 const updateBanner = asyncHandler(async (req, res) => {
-    const { title, subtitle, link, image, isActive } = req.body;
+    const { title, subtitle, link, product, image, isActive } = req.body;
 
     const banner = await Banner.findById(req.params.id);
 
     if (banner) {
-        banner.title = title || banner.title;
-        banner.subtitle = subtitle || banner.subtitle;
-        banner.link = link || banner.link;
+        if (title !== undefined) banner.title = title;
+        if (subtitle !== undefined) banner.subtitle = subtitle;
+        if (link !== undefined) banner.link = link;
+        if (req.body.hasOwnProperty('product')) banner.product = product || null;
         if (image) banner.image = image;
         if (isActive !== undefined) banner.isActive = isActive;
 
-        const updatedBanner = await banner.save();
-        res.json(updatedBanner);
+        await banner.save();
+        const populatedBanner = await Banner.findById(banner._id).populate('product', 'name slug price images mrp');
+        res.json(populatedBanner);
     } else {
         res.status(404);
         throw new Error('Banner not found');

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import PriceDetails from '../components/PriceDetails';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -202,43 +203,28 @@ const OrderDetails = () => {
                     </div>
 
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 sticky top-24">
-                            <h2 className="text-lg font-bold text-charcoal mb-4 pb-2 border-b">Order Summary</h2>
-                            
-                            <div className="space-y-3 mb-4 text-gray-600 text-sm">
-                                <div className="flex justify-between">
-                                    <span>Items</span>
-                                    <span>₹{order.itemsPrice}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Shipping</span>
-                                    <span>{Number(order.shippingPrice) > 0 ? `₹${order.shippingPrice}` : <span className="text-green-600 font-semibold">Free</span>}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>GST / Tax</span>
-                                    <span>₹{order.taxPrice}</span>
-                                </div>
-                            </div>
-                            
-                            <div className="border-t border-b py-3 mb-6">
-                                <div className="flex justify-between font-bold text-lg text-charcoal">
-                                    <span>Total</span>
-                                    <span className="text-maroon">₹{order.totalPrice}</span>
-                                </div>
-                            </div>
+                        <div className="sticky top-24 space-y-4">
+                            <PriceDetails
+                                itemsPrice={order.itemsPrice}
+                                mrpPrice={order.orderItems?.reduce((acc, item) => acc + ((item.mrp && Number(item.mrp) > Number(item.price)) ? Number(item.mrp) : Number(item.price)) * item.qty, 0) || order.itemsPrice}
+                                shippingPrice={order.shippingPrice}
+                                taxPrice={order.taxPrice}
+                                totalPrice={order.totalPrice}
+                                showCheckoutButton={false}
+                            />
 
                             {!order.isPaid && order.paymentMethod === 'Razorpay' && (
-                                <div>
+                                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
                                     {sdkReady ? (
                                         <button 
                                             onClick={paymentHandler}
                                             disabled={paying}
-                                            className="w-full bg-saffron text-white py-3 rounded font-bold shadow-md hover:bg-orange-600 transition-colors disabled:opacity-70"
+                                            className="w-full bg-saffron text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-orange-600 transition-colors disabled:opacity-70"
                                         >
                                             {paying ? 'Processing...' : 'Pay Now with Razorpay'}
                                         </button>
                                     ) : (
-                                        <button disabled className="w-full bg-gray-200 text-gray-500 py-3 rounded font-bold">
+                                        <button disabled className="w-full bg-gray-200 text-gray-500 py-3.5 rounded-xl font-bold">
                                             Loading Payment Gateway...
                                         </button>
                                     )}
@@ -246,7 +232,7 @@ const OrderDetails = () => {
                             )}
 
                             {!order.isPaid && order.paymentMethod === 'COD' && (
-                                <div className="text-center text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200 p-3 rounded">
+                                <div className="text-center text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200 p-3.5 rounded-xl">
                                     💵 Cash on Delivery (COD) — Please keep ₹{order.totalPrice} ready upon delivery.
                                 </div>
                             )}

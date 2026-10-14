@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, ShoppingBag } from 'lucide-react';
 import { addToCart, removeFromCart } from '../features/cartSlice';
+import PriceDetails from '../components/PriceDetails';
 
 const Cart = () => {
     const navigate = useNavigate();
@@ -9,7 +10,16 @@ const Cart = () => {
 
     const cart = useSelector((state) => state.cart);
     const { userInfo } = useSelector((state) => state.auth);
-    const { cartItems, itemsPrice, shippingPrice, taxPrice, totalPrice } = cart;
+    const { 
+        cartItems, 
+        itemsPrice, 
+        mrpPrice, 
+        discountPrice, 
+        shippingPrice, 
+        taxPrice, 
+        totalPrice, 
+        totalSavings 
+    } = cart;
 
     const removeFromCartHandler = (id) => {
         dispatch(removeFromCart(id));
@@ -96,40 +106,21 @@ const Cart = () => {
                         </div>
                     </div>
 
-                    {/* Order Summary */}
-                    <div className="w-full lg:w-80 flex-shrink-0">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 sticky top-24">
-                            <h2 className="text-xl font-bold text-charcoal mb-4 pb-2 border-b">Order Summary</h2>
-                            
-                            <div className="space-y-3 mb-4 text-gray-600">
-                                <div className="flex justify-between">
-                                    <span>Items ({cartItems.reduce((acc, item) => acc + item.qty, 0)})</span>
-                                    <span>₹{itemsPrice}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Shipping</span>
-                                    <span>{Number(shippingPrice) > 0 ? `₹${shippingPrice}` : <span className="text-green-600 font-semibold">Free</span>}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>GST / Tax</span>
-                                    <span>₹{taxPrice}</span>
-                                </div>
-                            </div>
-                            
-                            <div className="border-t pt-3 mb-6">
-                                <div className="flex justify-between font-bold text-lg text-charcoal">
-                                    <span>Total</span>
-                                    <span className="text-maroon">₹{totalPrice}</span>
-                                </div>
-                            </div>
-                            
-                            <button 
-                                onClick={checkoutHandler}
-                                disabled={cartItems.length === 0}
-                                className="w-full bg-saffron text-white py-3 rounded font-bold shadow-md hover:bg-orange-600 transition-colors"
-                            >
-                                Proceed to Checkout
-                            </button>
+                    {/* Price Details */}
+                    <div className="w-full lg:w-80 xl:w-96 flex-shrink-0">
+                        <div className="sticky top-24">
+                            <PriceDetails
+                                itemsPrice={itemsPrice}
+                                mrpPrice={mrpPrice}
+                                discountPrice={discountPrice}
+                                shippingPrice={shippingPrice}
+                                taxPrice={taxPrice}
+                                totalPrice={totalPrice}
+                                totalSavings={totalSavings}
+                                buttonText="Proceed to Checkout"
+                                onButtonClick={checkoutHandler}
+                                buttonDisabled={cartItems.length === 0}
+                            />
                         </div>
                     </div>
                 </div>

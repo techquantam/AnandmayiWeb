@@ -16,8 +16,19 @@ const addDecimals = (num) => {
 };
 
 const updateCart = (state) => {
-    // Calculate items price
+    // Calculate total MRP (incl. of all taxes)
+    const totalMrp = state.cartItems.reduce((acc, item) => {
+        const mrp = (item.mrp && Number(item.mrp) > Number(item.price)) ? Number(item.mrp) : Number(item.price);
+        return acc + mrp * item.qty;
+    }, 0);
+    state.mrpPrice = addDecimals(totalMrp);
+
+    // Calculate items selling price
     state.itemsPrice = addDecimals(state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0));
+
+    // Calculate discount on MRP
+    const discount = Math.max(0, totalMrp - Number(state.itemsPrice));
+    state.discountPrice = addDecimals(discount);
 
     // Calculate shipping price based on product-level shipping charges set by admin
     state.shippingPrice = addDecimals(
@@ -32,15 +43,25 @@ const updateCart = (state) => {
         }, 0)
     );
 
-    // Calculate total price
+    // Calculate total fees (shipping + tax)
+    state.feesPrice = addDecimals(Number(state.shippingPrice) + Number(state.taxPrice));
+
+    // Calculate total payable price
     state.totalPrice = (
         Number(state.itemsPrice) +
         Number(state.shippingPrice) +
         Number(state.taxPrice)
     ).toFixed(2);
 
+    // Calculate total savings (MRP - Total Price)
+    state.totalSavings = Math.max(0, Math.round(totalMrp - Number(state.totalPrice)));
+
     localStorage.setItem('cart', JSON.stringify(state));
 };
+
+if (initialState.cartItems && initialState.cartItems.length > 0) {
+    updateCart(initialState);
+}
 
 const cartSlice = createSlice({
     name: 'cart',

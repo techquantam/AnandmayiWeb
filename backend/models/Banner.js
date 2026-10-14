@@ -4,6 +4,11 @@ const bannerSchema = new mongoose.Schema({
     title: { type: String, required: true },
     subtitle: { type: String },
     link: { type: String },
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        default: null
+    },
     image: {
         public_id: { type: String },
         url: { type: String, required: true }

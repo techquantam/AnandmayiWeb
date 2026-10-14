@@ -45,6 +45,17 @@ const Home = () => {
         fetchHomeData();
     }, []);
 
+    const getBannerUrl = (banner) => {
+        if (banner.product) {
+            const slugOrId = typeof banner.product === 'object' ? (banner.product.slug || banner.product._id) : banner.product;
+            return `/product/${slugOrId}`;
+        }
+        if (banner.link && banner.link.trim() !== '') {
+            return banner.link;
+        }
+        return '/shop';
+    };
+
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center text-maroon font-medium">Loading...</div>;
     }
@@ -83,7 +94,7 @@ const Home = () => {
                                                         {banner.subtitle}
                                                     </p>
                                                 )}
-                                                <Link to={banner.link || '/shop'} className="bg-saffron hover:bg-orange-600 text-white font-medium py-2 md:py-3 px-6 md:px-8 rounded shadow-md transition duration-300 inline-block text-sm md:text-base">
+                                                <Link to={getBannerUrl(banner)} className="bg-saffron hover:bg-orange-600 text-white font-medium py-2 md:py-3 px-6 md:px-8 rounded shadow-md transition duration-300 inline-block text-sm md:text-base">
                                                     Shop Now
                                                 </Link>
                                             </div>

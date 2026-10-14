@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearCartItems, savePaymentMethod } from '../features/cartSlice';
 import CheckoutSteps from '../components/CheckoutSteps';
+import PriceDetails from '../components/PriceDetails';
 import api from '../services/api';
 
 const PlaceOrder = () => {
@@ -122,40 +123,21 @@ const PlaceOrder = () => {
                     </div>
                 </div>
 
-                {/* Summary */}
-                <div className="w-full lg:w-80 flex-shrink-0">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 sticky top-24">
-                        <h2 className="text-xl font-bold text-charcoal mb-4 pb-2 border-b">Order Summary</h2>
-                        
-                        <div className="space-y-3 mb-4 text-gray-600">
-                            <div className="flex justify-between">
-                                <span>Items</span>
-                                <span>₹{cart.itemsPrice}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>Shipping</span>
-                                <span>{Number(cart.shippingPrice) > 0 ? `₹${cart.shippingPrice}` : <span className="text-green-600 font-semibold">Free</span>}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span>GST / Tax</span>
-                                <span>₹{cart.taxPrice}</span>
-                            </div>
-                        </div>
-                        
-                        <div className="border-t pt-3 mb-6">
-                            <div className="flex justify-between font-bold text-lg text-charcoal">
-                                <span>Total</span>
-                                <span className="text-maroon">₹{cart.totalPrice}</span>
-                            </div>
-                        </div>
-                        
-                        <button 
-                            onClick={placeOrderHandler}
-                            disabled={cart.cartItems === 0}
-                            className="w-full bg-saffron text-white py-3 rounded font-bold shadow-md hover:bg-orange-600 transition-colors"
-                        >
-                            Place Order
-                        </button>
+                {/* Price Details */}
+                <div className="w-full lg:w-80 xl:w-96 flex-shrink-0">
+                    <div className="sticky top-24">
+                        <PriceDetails
+                            itemsPrice={cart.itemsPrice}
+                            mrpPrice={cart.mrpPrice}
+                            discountPrice={cart.discountPrice}
+                            shippingPrice={cart.shippingPrice}
+                            taxPrice={cart.taxPrice}
+                            totalPrice={cart.totalPrice}
+                            totalSavings={cart.totalSavings}
+                            buttonText="Place Order"
+                            onButtonClick={placeOrderHandler}
+                            buttonDisabled={!cart.cartItems || cart.cartItems.length === 0}
+                        />
                     </div>
                 </div>
             </div>
